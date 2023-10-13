@@ -14,10 +14,13 @@ jobs:
         run: docker pull vertica/vertica-ce:11.1.1-0
     
       - name: Start Vertica CE container
-        run: docker run -d --name vertica vertica/vertica-ce:11.1.1-0
+        run: docker run -d -p 5433:5433 --name vertica vertica/vertica-ce:11.1.1-0
     
       - name: Wait for Vertica CE to start
-        run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster
+        run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster -x
+
+      - name: Connect to db
+        run: docker exec vertica /opt/vertica/bin/vsql -h localhost -u dbadmin -d VMart
     
       - name: Run Python script to test connection
         run: |
