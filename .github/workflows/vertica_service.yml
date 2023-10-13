@@ -18,7 +18,7 @@ jobs:
 
       - name: ping
         run: |
-          for i in {0..60};do nc -vz localhost 5433;sleep 1;done
+          for i in {0..3};do nc -vz localhost 5433;sleep 1;done
     
       - name: Wait for Vertica CE to start
         run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster -x
@@ -34,6 +34,7 @@ jobs:
     
           # Connect to Vertica
           conn = psycopg2.connect(host='localhost', port=5433, database='VMart', user='dbadmin')
+          conn.set_client_encoding('UTF8')
     
           # Create a cursor
           cur = conn.cursor()
