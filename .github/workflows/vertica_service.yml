@@ -15,3 +15,8 @@ jobs:
       redis:
         # Docker Hub image
         image: vertica/vertica-ce:11.1.1-0
+
+    steps:
+      # Downloads a copy of the code in your repository before running CI tests
+      - name: Check out repository code
+        uses: actions/checkout@v4
