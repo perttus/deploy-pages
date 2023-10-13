@@ -1,0 +1,2 @@
+-P ubuntu:latest
+--container-architecture linux/amd64
