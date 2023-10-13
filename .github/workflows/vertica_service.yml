@@ -1,0 +1,17 @@
+name: Vertica container example
+on: push
+
+jobs:
+  # Label of the container job
+  container-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: vertica
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: vertica/vertica-ce:11.1.1-0
