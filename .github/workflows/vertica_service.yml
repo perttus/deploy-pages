@@ -1,22 +1,51 @@
-name: Vertica container example
-on: push
+on:
+  push:
+    branches:
+    - main
 
 jobs:
-  # Label of the container job
-  container-job:
-    # Containers must run in Linux based operating systems
+  build:
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: vertica/vertica-ce:11.1.1-0
-
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: vertica/vertica-ce:11.1.1-0
-
+  
     steps:
-      # Downloads a copy of the code in your repository before running CI tests
-      - name: Check out repository code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+    
+      - name: Set up Docker
+        uses: actions/setup-docker@v3
+    
+      - name: Pull Vertica CE image
+        run: docker pull vertica/vertica-ce:11.1.1-0
+    
+      - name: Start Vertica CE container
+        run: docker run -d --name vertica vertica/vertica-ce:11.1.1-0
+    
+      - name: Wait for Vertica CE to start
+        run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster
+    
+      - name: Run Python script to test connection
+        run: |
+          python3 << EOF
+          import psycopg2
+    
+          # Connect to Vertica
+          conn = psycopg2.connect(host='localhost', port=5433, database='VMart', user='dbadmin')
+    
+          # Create a cursor
+          cur = conn.cursor()
+    
+          # Execute a SQL query
+          cur.execute('SELECT 1')
+    
+          # Fetch the results
+          row = cur.fetchone()
+    
+          # Close the cursor and connection
+          cur.close()
+          conn.close()
+    
+          # Print the result
+          print(row)
+          EOF
+    
+      - name: Stop Vertica CE container
+        run: docker stop vertica
