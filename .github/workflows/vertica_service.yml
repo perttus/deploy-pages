@@ -21,6 +21,7 @@ jobs:
     
       - name: Run Python script to test connection
         run: |
+          pip3 install psycopg2
           python3 << EOF
           import psycopg2
     
