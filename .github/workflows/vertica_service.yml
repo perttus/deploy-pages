@@ -19,7 +19,10 @@ jobs:
       - name: ping
         run: |
           for i in {0..60}
-            if [[ $(docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP) == "*VMart*" ]]; then
+            STATUS=$(docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP)
+            echo $STATUS
+            if [[ $STATUS == *"VMart"* ]]
+            then
               break
               sleep 1
             fi
