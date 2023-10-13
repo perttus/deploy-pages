@@ -18,13 +18,21 @@ jobs:
 
       - name: ping
         run: |
-          for i in {0..30};do nc -vz localhost 5433;sleep 1;done
+          for i in {0..60}
+            STATUS=docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP
+            echo $STATUS
+            if [[ $STATUS == *"VMart"* ]]
+            then
+              break
+            sleep 1
+            fi
+          done
     
       - name: Wait for Vertica CE to start
         run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster -x
 
       - name: Connect to db
-        run: docker exec vertica /opt/vertica/bin/vsql -h localhost -U dbadmin -d VMart
+        run: docker exec vertica /opt/vertica/bin/vsql -h localhost -U dbadmin -d VMart -c "select 1"
     
       - name: Run Python script to test connection
         run: |
