@@ -16,15 +16,11 @@ jobs:
       - name: Start Vertica CE container
         run: docker run -d -p 5433:5433 --name vertica vertica/vertica-ce:11.1.1-0
 
-      - name: ping
+      - name: Wait for DB
         run: |
           for i in {0..60}; do
-            STATUS=$(docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP)
-            echo $STATUS
-            if [[ $STATUS == *"VMart"* ]]; then
-              break
-              sleep 1
-            fi
+            docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP | grep VMart >/dev/null && break
+            sleep 1
           done
     
       - name: Wait for Vertica CE to start
