@@ -54,6 +54,3 @@ jobs:
           # Print the result
           print(row)
           EOF
-    
-      - name: Stop Vertica CE container
-        run: docker stop vertica
