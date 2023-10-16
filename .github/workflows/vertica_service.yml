@@ -16,7 +16,7 @@ jobs:
               - 5433:5433
               - 5444:5444
             options: >-
-              --health-cmd /opt/vertica/bin/admintools -t db_status -s UP | grep VMart
+              --health-cmd "/opt/vertica/bin/admintools -t db_status -s UP | grep VMart"
               --health-interval 2s
               --health-timeout 5s
               --health-retries 30
