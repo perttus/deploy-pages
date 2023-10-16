@@ -6,28 +6,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-  
+
+    services:
+          # Label used to access the service container
+          vertica:
+            # Docker Hub image
+            image: vertica/vertica-ce:11.1.1-0
+            ports:
+              - 5433:5433
+              - 5444:5444
+            options: >-
+              --health-cmd /opt/vertica/bin/admintools -t db_status -s UP | grep VMart
+              --health-interval 2s
+              --health-timeout 5s
+              --health-retries 30
+    
     steps:
       - uses: actions/checkout@v3
-    
-      - name: Pull Vertica CE image
-        run: docker pull vertica/vertica-ce:11.1.1-0
-    
-      - name: Start Vertica CE container
-        run: docker run -d -p 5433:5433 --name vertica vertica/vertica-ce:11.1.1-0
-
-      - name: Wait for DB
-        run: |
-          for i in {0..60}; do
-            docker exec vertica /opt/vertica/bin/admintools -t db_status -s UP | grep VMart >/dev/null && break
-            sleep 1
-          done
-    
-      - name: Wait for Vertica CE to start
-        run: docker exec vertica /opt/vertica/bin/admintools -t view_cluster -x
-
-      - name: Connect to db
-        run: docker exec vertica /opt/vertica/bin/vsql -h localhost -U dbadmin -d VMart -c "select 1"
     
       - name: Run Python script to test connection
         run: |
